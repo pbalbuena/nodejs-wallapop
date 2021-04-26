@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block titulo %} Ofertas – My Wallapop {% endblock %}
+{% block contenido_principal %}
+<h2>Ofertas</h2>
+
+<!-- Agregar Canción -->
+<div class="row text-right">
+    <a href="/ofertas/agregar" class="btn btn-info" role="button">Agregar oferta</a>
+</div>
+
+<div class="row">
+    <!-- http://librosweb.es/libro/bootstrap_3/capitulo_2/tipos_de_rejillas.html -->
+    <!-- Inicio del Bloque oferta -->
+    {% for oferta in ofertas %}
+    <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3">
+        <div style="width: 200px">
+                <!-- http://www.socicon.com/generator.php -->
+                <div class="wrap">{{ oferta.titulo }}</div>
+                <div class="small">Autor: {{ oferta.autor }} </div>
+                <div class="text-right">{{ oferta.precio }} €</div>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+    <!-- Fin del Bloque oferta -->
+</div>
