@@ -1,12 +1,16 @@
 module.exports = function(app, swig, gestorBD) {
 
     app.get("/registrarse", function(req, res) {
-        let respuesta = swig.renderFile('views/bregistro.html', {});
+        let respuesta = swig.renderFile('views/bregistro.html', {
+
+        });
         res.send(respuesta);
     });
 
     app.get("/identificarse", function(req, res) {
-        let respuesta = swig.renderFile('views/bidentificacion.html', {});
+        let respuesta = swig.renderFile('views/bidentificacion.html', {
+
+        });
         res.send(respuesta);
     });
 
@@ -39,6 +43,7 @@ module.exports = function(app, swig, gestorBD) {
                 res.send("No identificado: ");
             } else {
                 req.session.usuario = usuarios[0].email;
+                req.session.money = usuarios[0].money;
                 res.redirect("/ofertas");
             }
         });
@@ -46,7 +51,7 @@ module.exports = function(app, swig, gestorBD) {
 
     app.get('/desconectarse', function (req, res) {
         req.session.usuario = null;
-        res.send("Usuario desconectado");
+        res.redirect("/identificarse");
     })
 
 };
