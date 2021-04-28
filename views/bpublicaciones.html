@@ -13,6 +13,7 @@
 		<thead>
 			<tr>
 				<th>Título</th>
+				<th>Detalle</th>
 				<th>Precio</th>
 				<th class="col-md-1"></th>
 			</tr>
@@ -21,9 +22,10 @@
 		{% for oferta in ofertas %}
 			<tr>
 				<td>{{ oferta.titulo }}</td>
+				<td>{{ oferta.detalle }}</td>
 				<td>{{ oferta.precio }} €</td>
-				<td><a href="/cancion/modificar/{{ cancion._id.toString() }}">Modificar</a> <br>
-					<a href="/cancion/eliminar/{{ cancion._id.toString() }}">Eliminar</a> <br>
+				<td>
+					<a href="/ofertas/eliminar/{{ oferta._id.toString() }}">Eliminar</a>
 			    </td>
 			</tr>
 		{% endfor %}

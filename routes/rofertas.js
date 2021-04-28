@@ -29,6 +29,17 @@ module.exports = function(app, swig, gestorBD) {
         res.send(respuesta);
     })
 
+    app.get('/ofertas/eliminar/:id', function (req, res) {
+        let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
+        gestorBD.eliminarOferta(criterio,function(ofertas){
+            if ( ofertas == null ){
+                res.send(respuesta);
+            } else {
+                res.redirect("/publicaciones");
+            }
+        });
+    });
+
 
 
     app.post('/oferta', function (req, res){
