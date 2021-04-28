@@ -14,6 +14,25 @@ module.exports = function(app, swig, gestorBD) {
         res.send(respuesta);
     });
 
+    /**
+     * Mostrar todos los usuarios del sistema (no mostrar admin)
+     */
+    app.get("/usuarios", function (req, res){
+        let criterio = {
+
+        }
+        gestorBD.obtenerUsuarios(criterio, function(usuarios){
+            let respuesta = swig.renderFile('views/busuarios.html', {
+                usuarios : usuarios
+            });
+            res.send(respuesta);
+        });
+    });
+
+
+    /**
+     * error si: password no repetida o usuario ya esta en el sistema
+     */
     app.post('/usuario', function(req, res) {
         let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');
@@ -21,11 +40,35 @@ module.exports = function(app, swig, gestorBD) {
             email : req.body.email,
             password : seguro
         }
-        gestorBD.insertarUsuario(usuario, function(id) {
-            if (id == null){
-                res.send("Error al insertar el usuario");
+        if(req.body.password != req.body.passwordConfirm){
+            throw new Error("Las contraseñas no coinciden");
+        }
+        if(req.body.password == req.body.passwordConfirm){
+            let criterio = {
+                email : usuario.email
+            }
+            gestorBD.obtenerUsuarios(criterio, function(usuarios) {
+                if(usuarios.length > 0){
+                    throw new Error("Ya existe un usuario con ese email");
+                } else{
+                    gestorBD.insertarUsuario(usuario, function(id) {
+                            res.redirect("/ofertas");
+                    });
+                }
+            });
+        }
+    });
+
+    /**
+     * Eliminar un usuario de la base de datos
+     */
+    app.get('/usuario/eliminar/:id', function (req, res) {
+        let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
+        gestorBD.eliminarUsuario(criterio,function(usuarios){
+            if ( usuarios == null ){
+                res.send(respuesta);
             } else {
-                res.redirect("/ofertas");
+                res.redirect("/usuarios");
             }
         });
     });
@@ -40,7 +83,7 @@ module.exports = function(app, swig, gestorBD) {
         gestorBD.obtenerUsuarios(criterio, function(usuarios) {
             if (usuarios == null || usuarios.length == 0) {
                 req.session.usuario = null;
-                res.send("No identificado: ");
+
             } else {
                 req.session.usuario = usuarios[0].email;
                 req.session.money = usuarios[0].money;
@@ -53,5 +96,7 @@ module.exports = function(app, swig, gestorBD) {
         req.session.usuario = null;
         res.redirect("/identificarse");
     })
+
+
 
 };

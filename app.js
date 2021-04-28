@@ -19,6 +19,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 let gestorBD = require("./modules/gestorBD.js");
 gestorBD.init(app,mongo);
 
+
+
+
+
+
 // Variables
 app.set('port', 8081);
 app.set('db','mongodb://admin:sdi@tiendamusica-shard-00-00.ffb8z.mongodb.net:27017,tiendamusica-shard-00-01.ffb8z.mongodb.net:27017,tiendamusica-shard-00-02.ffb8z.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-thy2zp-shard-0&authSource=admin&retryWrites=true&w=majority');
@@ -28,6 +33,23 @@ app.set('crypto',crypto);
 //Rutas/controladores por lógica
 require("./routes/rusuarios.js")(app, swig, gestorBD);
 require("./routes/rofertas.js")(app, swig, gestorBD);
+
+
+//manejador de errores
+const clientErrorHandler = (err, req, res, next) => {
+    console.log(err.message);
+    res.status(400);
+
+    let respuesta = swig.renderFile('views/error.html',
+        {
+            usuario : req.session.usuario,
+            money : req.session.money,
+            error : err.message
+        });
+    res.send(respuesta);
+};
+
+app.use(clientErrorHandler);
 
 //lanzar servidor
 app.listen(app.get('port'), function (){
