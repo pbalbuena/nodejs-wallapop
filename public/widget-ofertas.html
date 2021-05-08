@@ -1,0 +1,59 @@
+<div id="widget-ofertas" >
+    <button class="btn" onclick="cargarOfertas()" >Actualizar</button>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Título</th>
+            <th>Detalle</th>
+            <th>Precio</th>
+            <th>Vendedor</th>
+            <th class="col-md-1"></th>
+        </tr>
+        </thead>
+        <tbody id="tablaCuerpo">
+
+        </tbody>
+    </table>
+</div>
+<script>
+    window.history.pushState("", "", "/cliente.html?w=ofertas");
+
+    var ofertas;
+    function cargarOfertas(){
+        $.ajax({
+            url: URLbase + "/ofertas",
+            type: "GET",
+            data: { },
+            dataType: 'json',
+            headers: { "token": token },
+            success: function(respuesta) {
+                ofertas = respuesta;
+                actualizarTabla(ofertas);
+            },
+            error : function (error){
+                $( "#contenedor-principal" ).load("widget-login.html");
+            }
+        });
+    }
+    function actualizarTabla(ofertasMostrar){$( "#tablaCuerpo" ).empty(); // Vaciar la tabla
+        for (i = 0; i < ofertasMostrar.length; i++) {
+            $( "#tablaCuerpo" ).append(
+                "<tr id="+ofertasMostrar[i]._id+">"+
+                "<td>"+ofertasMostrar[i].titulo+"</td>" +
+                "<td>"+ofertasMostrar[i].detalle+"</td>" +
+                "<td>"+ofertasMostrar[i].precio+"</td>" +
+                "<td>"+ofertasMostrar[i].autor+"<br><a onclick=mensaje('"+ofertasMostrar[i]._id+"')>Enviar mensaje</a></td>" +
+                "</tr>" );
+            // Mucho cuidado con las comillas del eliminarOferta
+            //la id tiene que ir entre comillas ' '
+        }
+    }
+
+    cargarOfertas();
+
+    function mensaje(_id) {
+        idOfertaSeleccionada = _id;
+        $( "#contenedor-principal" ).load( "widget-chat.html");
+    }
+
+</script>

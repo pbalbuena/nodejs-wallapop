@@ -17,7 +17,7 @@
                 <!-- http://www.socicon.com/generator.php -->
                 <div class="wrap">{{ oferta.titulo }}</div>
                 <div class="small">Autor: {{ oferta.autor }} </div>
-                <div class="text-right">{{ oferta.precio }} €</div>
+                <div class="text-right"> <a href="/ofertas/comprar/{{ oferta._id.toString() }}">{{ oferta.precio }} € </a></div>
             </a>
         </div>
     </div>

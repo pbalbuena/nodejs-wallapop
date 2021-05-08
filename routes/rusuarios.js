@@ -41,7 +41,7 @@ module.exports = function(app, swig, gestorBD) {
             password : seguro
         }
         if(req.body.password != req.body.passwordConfirm){
-            throw new Error("Las contraseñas no coinciden");
+            app.get("ErrorHandler")(new Error("Las contraseñas no coinciden"), req, res);
         }
         if(req.body.password == req.body.passwordConfirm){
             let criterio = {
@@ -49,7 +49,7 @@ module.exports = function(app, swig, gestorBD) {
             }
             gestorBD.obtenerUsuarios(criterio, function(usuarios) {
                 if(usuarios.length > 0){
-                    throw new Error("Ya existe un usuario con ese email");
+                    app.get("ErrorHandler")(new Error("Ya existe un usuario con ese email"), req, res);
                 } else{
                     gestorBD.insertarUsuario(usuario, function(id) {
                             res.redirect("/ofertas");

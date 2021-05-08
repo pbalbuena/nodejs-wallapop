@@ -1,12 +1,7 @@
 {% extends "base.html" %} {% block titulo %} Mis publicaciones {% endblock %} 
 
 {% block contenido_principal %}
-<h2>Mis publicaciones</h2>
-
-<!-- Agregar Canción -->
-<div class="row text-right">
-	<a href="/ofertas/agregar" class="btn btn-info" role="button">Agregar oferta</a>
-</div>
+<h2>Mis compras</h2>
 
 <div class="table-responsive">
 	<table class="table table-hover">
@@ -15,6 +10,7 @@
 				<th>Título</th>
 				<th>Detalle</th>
 				<th>Precio</th>
+				<th>Vendedor</th>
 				<th class="col-md-1"></th>
 			</tr>
 		</thead>
@@ -24,14 +20,7 @@
 				<td>{{ oferta.titulo }}</td>
 				<td>{{ oferta.detalle }}</td>
 				<td>{{ oferta.precio }} €</td>
-				<td>
-					{% if oferta.usuarioCompra == null %}
-					<a href="/ofertas/eliminar/{{ oferta._id.toString() }}">Eliminar</a>
-					{% endif %}
-					{% if oferta.usuarioCompra != null %}
-					Vendida a {{ oferta.usuarioCompra }}
-					{% endif %}
-			    </td>
+				<td>{{ oferta.autor }} </td>
 			</tr>
 		{% endfor %}
 		</tbody>
