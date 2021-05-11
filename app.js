@@ -202,6 +202,11 @@ const clientErrorHandler = (err, req, res, next) => {
 app.use(clientErrorHandler);
 app.set('ErrorHandler', clientErrorHandler);
 
+//redirigar la página principal a las ofertas
+app.get('/', function (req, res) {
+    res.redirect('/ofertas');
+});
+
 //lanzar servidor
 app.listen(app.get('port'), function (){
     console.log('servidor activo')
