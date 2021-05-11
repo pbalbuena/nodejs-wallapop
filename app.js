@@ -46,9 +46,15 @@ app.set('clave','abcdefg');
 app.set('crypto',crypto);
 
 
-//routers
+///////////////////////////////////////////////
+// ROUTERS
+///////////////////////////////////////////////
 
-// routerUsuarioToken
+/**
+ * Definimos un RouterUsuarioToken que comprueba que tengamos un token válido
+ * antes de permitirnos continuar
+ * @type {Router}
+ */
 let routerUsuarioToken = express.Router();
 routerUsuarioToken.use(function(req, res, next) {
     // obtener el token, vía headers (opcionalmente GET y/o POST).
@@ -80,8 +86,94 @@ routerUsuarioToken.use(function(req, res, next) {
         });
     }
 });
-// Aplicar routerUsuarioToken
+
+/**
+ * Aplicar routerUsuarioToken
+ * Las siguientes URL no se pueden acceder sin un token válido
+ */
 app.use('/api/ofertas', routerUsuarioToken);
+
+
+
+/**
+ * Definimos el router : routerUsuarioSession
+ * Este router obliga a que haya un usuario en sesión
+ */
+
+var routerUsuarioSession = express.Router();
+routerUsuarioSession.use(function(req, res, next) {
+    console.log("routerUsuarioSession");
+    if ( req.session.usuario ) {
+        // dejamos correr la petición
+        next();
+    } else {
+        console.log("El router ha denegado la petición")
+        res.redirect("/identificarse");
+    }
+});
+
+/**
+ * Aplicar RouterUsuarioSession
+ * A las siguientes URLS no se pueden enviar peticiones si el usuario no está en sesión
+ */
+app.use("/ofertas/agregar",routerUsuarioSession);
+app.use("/ofertas/eliminar",routerUsuarioSession);
+app.use("/oferta",routerUsuarioSession);
+app.use("/publicaciones",routerUsuarioSession);
+app.use("/ofertas/comprar",routerUsuarioSession);
+app.use("/compras",routerUsuarioSession);
+
+/**
+ * Definimos el router : routerUsuarioAdmin
+ * Este router obliga a que haya un admin en sesión
+ */
+var routerUsuarioAdmin = express.Router();
+routerUsuarioAdmin.use(function(req, res, next) {
+    console.log("routerUsuarioAdmin");
+    if ( req.session.usuario == "admin@admin.com") {
+        // dejamos correr la petición
+        next();
+    } else {
+        console.log("El router ha denegado la petición")
+        res.redirect("/identificarse");
+    }
+});
+
+/**
+ * Aplicar RouterUsuarioAdmin
+ * A las siguientes URLS no se pueden enviar peticiones si el admin no está en sesión
+ */
+app.use("/usuarios",routerUsuarioAdmin);
+app.use("/usuario/eliminar",routerUsuarioAdmin);
+
+/**
+ * Definimos un routerUsuarioAutor que se encargará de no dejar correr una petición
+ * si no somos el autor de una oferta
+ * @type {Router}
+ */
+let routerUsuarioAutor = express.Router();
+routerUsuarioAutor.use(function(req, res, next) {
+    console.log("routerUsuarioAutor");
+    let path = require('path');
+    let id = path.basename(req.originalUrl);
+// Cuidado porque req.params no funciona
+// en el router si los params van en la URL.
+    gestorBD.obtenerOfertas(
+        {_id: mongo.ObjectID(id) }, function (ofertas) {
+            console.log(ofertas[0]);
+            if(ofertas[0].autor == req.session.usuario ){
+                next();
+            } else {
+                console.log("El router ha denegado la petición")
+                res.redirect("/publicaciones");
+            }
+        })
+});
+
+/**
+ * Aplicamos el routerUsuarioAutor para que las siguientes URL no puedan acceder a ese contenido
+ */
+app.use("/ofertas/eliminar",routerUsuarioAutor);
 
 //recursos estaticos
 app.use(express.static('public'));

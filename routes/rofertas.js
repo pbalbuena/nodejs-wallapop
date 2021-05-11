@@ -5,6 +5,7 @@ module.exports = function(app, swig, gestorBD) {
      * Lista las ofertas disponibles para comprar, no muestra las ofertas YA COMPRADAS o las del usuario LOGUEADO
      */
     app.get("/ofertas", function(req, res) {
+        console.log("GET ofertas")
         let criterio = {
             autor : {$ne:req.session.usuario},
             usuarioCompra : ""
@@ -25,8 +26,11 @@ module.exports = function(app, swig, gestorBD) {
         });
     });
 
+    /**
+     *
+     */
     app.get('/ofertas/agregar', function (req, res) {
-
+        console.log("GET ofertas agregar")
         let respuesta = swig.renderFile('views/bAgregarOferta.html', {
             usuario : req.session.usuario,
             money : req.session.money
@@ -34,7 +38,11 @@ module.exports = function(app, swig, gestorBD) {
         res.send(respuesta);
     })
 
+    /**
+     *
+     */
     app.get('/ofertas/eliminar/:id', function (req, res) {
+        console.log("GET ofertas eliminar")
         let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
         gestorBD.eliminarOferta(criterio,function(ofertas){
             if ( ofertas == null ){
@@ -45,9 +53,11 @@ module.exports = function(app, swig, gestorBD) {
         });
     });
 
-
-
+    /**
+     *
+     */
     app.post('/oferta', function (req, res){
+        console.log("POST oferta")
         let oferta = {
             titulo : req.body.titulo,
             detalle : req.body.detalle,
@@ -71,6 +81,7 @@ module.exports = function(app, swig, gestorBD) {
      * Usuario compra una oferta (error si no tiene suficiente dinero)
      */
     app.get('/ofertas/comprar/:id', function (req, res) {
+        console.log("GET ofertas comprar")
         let ofertaId = gestorBD.mongo.ObjectID(req.params.id);
         let criterio = {
             "_id" : ofertaId
@@ -106,6 +117,7 @@ module.exports = function(app, swig, gestorBD) {
      * Ver nuestras propias compras (las ofertas del usuario logueado)
      */
     app.get("/compras", function(req, res) {
+        console.log("GET compras")
         let criterio = {
             usuarioCompra : req.session.usuario
         };
@@ -127,6 +139,7 @@ module.exports = function(app, swig, gestorBD) {
      * Ver nuestras propias ofertas (las ofertas del usuario logueado)
      */
     app.get("/publicaciones", function(req, res) {
+        console.log("GET publicaciones")
         let criterio = { autor : req.session.usuario };
         gestorBD.obtenerOfertas(criterio, function(ofertas) {
             if (ofertas == null) {

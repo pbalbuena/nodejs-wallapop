@@ -31,7 +31,9 @@
             dataType: 'json',
             headers: { "token": token },
             success: function(respuesta) {
-                mensajes = respuesta;
+                console.log("mensajes enviados:")
+                console.log(respuesta[0].mensajes)
+                mensajes = respuesta[0].mensajes;
                 actualizarMensajes(mensajes);
             },
             error : function (error){
@@ -43,8 +45,9 @@
     function actualizarMensajes(mensajesMostrar){$( "#mensajes" ).empty(); // Vaciar mensajes
         for (i = 0; i < mensajesMostrar.length; i++) {
             $( "#mensajes" ).append(
-                "<div id="+mensajesMostrar[i]._id+">"+
-                 mensajesMostrar[i].autor+": ("+mensajesMostrar[i].fecha+")"+"<br>"+mensajesMostrar[i].texto+
+                "<div>"+
+                 mensajesMostrar[i].autor+": ("+mensajesMostrar[i].fecha+")"+
+                "<br>"+mensajesMostrar[i].texto+
                 "</div>"
             );
             // Mucho cuidado con las comillas
@@ -60,11 +63,7 @@
             type: "PUT",
             data: {
                 //se puede poner lo de la izquierda con cadena de texto (si es necesario como en este caso por el $)
-                "$push": {
-                    "mensajes": {
-                        "texto" : $("#agregar-mensaje").val()
-                    }
-                }
+                "texto" : $("#agregar-mensaje").val()
             },
             dataType: 'json',
             headers: { "token": token },
@@ -74,6 +73,7 @@
 
             },
             error : function (error){
+                console.log("Ha habido un error enviando el mensaje"); // <-- Prueba
                 $( "#contenedor-principal" ).load("widget-login.html");
             }
         });

@@ -171,8 +171,15 @@ module.exports = {
                 funcionCallback(null);
             } else {
                 let collection = db.collection('chats');
-                collection.update(criterio, {$set: chat}, function (err, result) {
+                //console.log("criterio:")
+                //console.log(criterio)
+
+                //console.log("chat:")
+                //console.log(chat)
+
+                collection.update(criterio, {$push : chat}, function (err, result) {
                     if (err) {
+                        console.log(err)
                         funcionCallback(null);
                     } else {
                         funcionCallback(result);

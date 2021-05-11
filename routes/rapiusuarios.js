@@ -1,5 +1,12 @@
 module.exports = function(app, gestorBD) {
+
+
+    /**
+     * Esta función responde a la petición POST del formulario de identificación, permitiendo
+     * al usuario identificarse mediante la API REST
+     */
     app.post('/api/autenticar', function (req,res){
+        console.log("POST api autenticar")
         let seguro =  app.get("crypto").createHmac('sha256', app.get('clave')).
         update(req.body.password).digest('hex');
 
