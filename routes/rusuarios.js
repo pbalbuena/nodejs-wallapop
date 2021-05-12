@@ -29,10 +29,12 @@ module.exports = function(app, swig, gestorBD) {
     app.get("/usuarios", function (req, res){
         console.log("GET usuarios")
         let criterio = {
-
+            email : {$ne:req.session.usuario}
         }
         gestorBD.obtenerUsuarios(criterio, function(usuarios){
             let respuesta = swig.renderFile('views/busuarios.html', {
+                usuario : req.session.usuario,
+                money : req.session.money,
                 usuarios : usuarios
             });
             res.send(respuesta);
@@ -75,17 +77,28 @@ module.exports = function(app, swig, gestorBD) {
     /**
      * Ruta que responde a la petición GET de eliminar un usuario de la base de datos según su id
      * Eliminar un usuario de la base de datos
+     * Eliminaremos también las ofertas cuyo autor sea el usuario eliminado
+     * Eliminaremos también los chats donde haya participado
      */
     app.get('/usuario/eliminar/:id', function (req, res) {
         console.log("GET usuario eliminar")
         let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
-        gestorBD.eliminarUsuario(criterio,function(usuarios){
-            if ( usuarios == null ){
-                res.send(respuesta);
-            } else {
-                res.redirect("/usuarios");
-            }
-        });
+        gestorBD.obtenerUsuarios(criterio, function (usuarios){
+            let criterioOferta = {"autor" : usuarios[0].email}
+            gestorBD.eliminarOferta(criterioOferta, function (ofertas){
+                let criterioChat = {
+                        "$or" : [
+                        { "vendedor" : usuarios[0].email },
+                        { "interesado" : usuarios[0].email }
+                    ]
+                }
+                gestorBD.eliminarChat(criterioChat, function (chats){
+                    gestorBD.eliminarUsuario(criterio,function(usuarios){
+                        res.redirect("/usuarios");
+                    })
+                })
+            });
+        })
     });
 
     /**
@@ -103,7 +116,7 @@ module.exports = function(app, swig, gestorBD) {
         gestorBD.obtenerUsuarios(criterio, function(usuarios) {
             if (usuarios == null || usuarios.length == 0) {
                 req.session.usuario = null;
-
+                app.get("ErrorHandler")(new Error("Las credenciales son incorrectas"), req, res);
             } else {
                 req.session.usuario = usuarios[0].email;
                 req.session.money = usuarios[0].money;

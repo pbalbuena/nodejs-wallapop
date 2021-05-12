@@ -15,12 +15,12 @@
     </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <button type="button" id="boton-login">Aceptar</button>
+            <button class="btn btn-primary" type="button" id="boton-login">Aceptar</button>
         </div>
     </div>
 </div>
 <script>
-    window.history.pushState("", "", "/cliente.html?w=chat");
+    window.history.pushState("", "", "/cliente.html?w=login");
 
     $( "#boton-login").click(function (){
         $.ajax({
